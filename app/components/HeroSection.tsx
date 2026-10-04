@@ -78,7 +78,7 @@ export default function HeroSection() {
                         loop
                         playsInline
                         preload="metadata"
-                        poster="/videos/eben-ezer-hero.mp4"
+                        poster="https://lobrvzg9tvicyf5j.public.blob.vercel-storage.com/10131065-uhd_4096_2160_25fps.mp4"
                         aria-hidden="true"
                         className="
       absolute
@@ -90,7 +90,7 @@ export default function HeroSection() {
     "
                     >
                         <source
-                            src="/videos/eben-ezer-hero.mp4"
+                            src="https://lobrvzg9tvicyf5j.public.blob.vercel-storage.com/10131065-uhd_4096_2160_25fps.mp4"
                             type="video/mp4"
                         />
                     </video>
