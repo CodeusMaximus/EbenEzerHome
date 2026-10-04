@@ -1,0 +1,1912 @@
+"use client";
+
+import {
+    AnimatePresence,
+    motion,
+} from "framer-motion";
+import {
+    ArrowLeft,
+    ArrowRight,
+    CalendarDays,
+    Check,
+    ChevronLeft,
+    ChevronRight,
+    Clock3,
+    Laptop,
+    Phone,
+    ShieldCheck,
+    Stethoscope,
+    X,
+} from "lucide-react";
+import {
+    type ElementType,
+    type FormEvent,
+    type ReactNode,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
+
+type BookAppointmentModalProps = {
+    open: boolean;
+    onClose: () => void;
+};
+
+type AppointmentType = {
+    id: string;
+    name: string;
+    description: string;
+    duration: string;
+    icon: ElementType;
+};
+
+
+/*
+ * DEMO AVAILABILITY ONLY
+ *
+ * We will replace this with:
+ * GET /api/appointments/availability?date=YYYY-MM-DD
+ */
+const demoTimes = [
+    "9:00 AM",
+    "9:30 AM",
+    "10:00 AM",
+    "10:30 AM",
+    "11:30 AM",
+    "1:00 PM",
+    "1:30 PM",
+    "2:30 PM",
+    "3:00 PM",
+    "4:30 PM",
+    "5:00 PM",
+    "6:00 PM",
+];
+
+export default function BookAppointmentModal({
+    open,
+    onClose,
+}: BookAppointmentModalProps) {
+    const appointmentTypes: AppointmentType[] = [
+        {
+            id: "psychiatric-evaluation",
+            name: "Comprehensive Psychiatric Evaluation",
+            description: "A comprehensive assessment to better understand your symptoms, history, concerns, and treatment goals.",
+            duration: "Initial Visit",
+            icon: Stethoscope,
+        },
+        {
+            id: "medication-management",
+            name: "Psychiatric Medication Management",
+            description: "Personalized medication care with ongoing monitoring, education, and thoughtful treatment adjustments.",
+            duration: "Follow-Up",
+            icon: ShieldCheck,
+        },
+        {
+            id: "telehealth",
+            name: "Telehealth Appointment",
+            description: "Convenient virtual psychiatric care for eligible patients located in New York or New Jersey.",
+            duration: "NY & NJ",
+            icon: Laptop,
+        },
+    ];
+
+    const [step, setStep] = useState(1);
+
+    const [appointmentType, setAppointmentType] =
+        useState("");
+
+    const [selectedDate, setSelectedDate] =
+        useState<Date | null>(null);
+
+    const [selectedTime, setSelectedTime] =
+        useState("");
+
+    const [currentMonth, setCurrentMonth] =
+        useState(() => startOfMonth(new Date()));
+
+    const [loading, setLoading] =
+        useState(false);
+
+    const [submitted, setSubmitted] =
+        useState(false);
+
+    useEffect(() => {
+        if (!open) return;
+
+        const previous =
+            document.body.style.overflow;
+
+        document.body.style.overflow =
+            "hidden";
+
+        const handleEscape = (
+            event: KeyboardEvent
+        ) => {
+            if (event.key === "Escape") {
+                onClose();
+            }
+        };
+
+        window.addEventListener(
+            "keydown",
+            handleEscape
+        );
+
+        return () => {
+            document.body.style.overflow =
+                previous;
+
+            window.removeEventListener(
+                "keydown",
+                handleEscape
+            );
+        };
+    }, [open, onClose]);
+
+    const days = useMemo(
+        () => getCalendarDays(currentMonth),
+        [currentMonth]
+    );
+
+    const resetAndClose = () => {
+        setStep(1);
+        setAppointmentType("");
+        setSelectedDate(null);
+        setSelectedTime("");
+        setSubmitted(false);
+        onClose();
+    };
+
+    const nextStep = () => {
+        if (step === 1 && !appointmentType)
+            return;
+
+        if (
+            step === 2 &&
+            (!selectedDate || !selectedTime)
+        )
+            return;
+
+        setStep((previous) =>
+            Math.min(previous + 1, 3)
+        );
+    };
+
+    const handleSubmit = async (
+        event: FormEvent<HTMLFormElement>
+    ) => {
+        event.preventDefault();
+
+        setLoading(true);
+
+        /*
+         * REAL API WILL GO HERE:
+         *
+         * await fetch("/api/appointments/book", {
+         *     method: "POST",
+         *     headers: {
+         *         "Content-Type": "application/json",
+         *     },
+         *     body: JSON.stringify({
+         *         appointmentType,
+         *         date: formatDateKey(selectedDate!),
+         *         time: selectedTime,
+         *         ...contactInformation
+         *     })
+         * });
+         */
+
+        await new Promise((resolve) =>
+            setTimeout(resolve, 700)
+        );
+
+        setLoading(false);
+        setSubmitted(true);
+    };
+
+    return (
+        <AnimatePresence>
+            {open && (
+                <>
+                    {/* BACKDROP */}
+                    <motion.button
+                        type="button"
+                        aria-label="Close appointment booking"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={resetAndClose}
+                        className="
+                            fixed
+                            inset-0
+                            z-[300]
+                            cursor-default
+                            bg-[#1f1f1f]/75
+                            backdrop-blur-[6px]
+                        "
+                    />
+
+                    {/* ==========================================
+                        MODAL SCROLL WRAPPER
+
+                        Mobile:
+                        Entire modal scrolls naturally.
+
+                        Desktop:
+                        Modal remains vertically centered.
+                    =========================================== */}
+                    <div
+                        className="
+                            pointer-events-auto
+                            fixed
+                            inset-0
+                            z-[310]
+                            overflow-x-hidden
+                            overflow-y-auto
+                            overscroll-y-contain
+                            touch-pan-y
+                            px-3
+                            py-4
+                            sm:px-5
+                            sm:py-6
+                        "
+                        style={{
+                            WebkitOverflowScrolling: "touch",
+                        }}
+                    >
+                        {/* CENTERING WRAPPER */}
+                        <div
+                            className="
+                                flex
+                                min-h-full
+                                w-full
+                                items-start
+                                justify-center
+                                sm:items-center
+                            "
+                        >
+                            <motion.div
+                                role="dialog"
+                                aria-modal="true"
+                                aria-labelledby="booking-title"
+                                initial={{
+                                    opacity: 0,
+                                    y: 30,
+                                    scale: 0.97,
+                                }}
+                                animate={{
+                                    opacity: 1,
+                                    y: 0,
+                                    scale: 1,
+                                }}
+                                exit={{
+                                    opacity: 0,
+                                    y: 20,
+                                    scale: 0.98,
+                                }}
+                                transition={{
+                                    duration: 0.35,
+                                    ease: [
+                                        0.22,
+                                        1,
+                                        0.36,
+                                        1,
+                                    ],
+                                }}
+                                className="
+                                    pointer-events-auto
+                                    relative
+                                    w-full
+                                    max-w-[1080px]
+                                    overflow-hidden
+                                    rounded-[26px]
+                                    bg-white
+                                    shadow-[0_35px_100px_rgba(0,0,0,0.30)]
+                                    sm:rounded-[30px]
+                                "
+                            >
+                                {/* CLOSE */}
+                                <button
+                                    type="button"
+                                    onClick={
+                                        resetAndClose
+                                    }
+                                    aria-label="Close"
+                                    className="
+                                        absolute
+                                        right-4
+                                        top-4
+                                        z-40
+                                        flex
+                                        h-11
+                                        w-11
+                                        items-center
+                                        justify-center
+                                        rounded-full
+                                        border
+                                        border-[#252525]/10
+                                        bg-white/95
+                                        text-[#252525]
+                                        shadow-sm
+                                        transition
+                                        hover:bg-[#252525]
+                                        hover:text-white
+                                    "
+                                >
+                                    <X className="h-5 w-5" />
+                                </button>
+
+                                {submitted ? (
+                                    <BookingSuccess
+                                        appointmentTypes={appointmentTypes}
+                                        appointmentType={
+                                            appointmentType
+                                        }
+                                        date={
+                                            selectedDate
+                                        }
+                                        time={
+                                            selectedTime
+                                        }
+                                        onClose={
+                                            resetAndClose
+                                        }
+                                    />
+                                ) : (
+                                    <div
+                                        className="
+                                            grid
+                                            lg:grid-cols-[310px_1fr]
+                                        "
+                                    >
+                                        {/* =====================
+                                            LEFT SIDE
+                                        ====================== */}
+                                        <aside
+                                            className="
+                                                relative
+                                                overflow-hidden
+                                                bg-[#252525]
+                                                px-6
+                                                py-7
+                                                text-white
+                                                sm:p-8
+                                                lg:min-h-[690px]
+                                                lg:p-9
+                                            "
+                                        >
+                                            <BookingArtwork />
+
+                                            <div className="relative z-10">
+                                                <span
+                                                    className="
+                                                        inline-flex
+                                                        rounded-full
+                                                        border
+                                                        border-white/10
+                                                        bg-white/[0.06]
+                                                        px-3
+                                                        py-2
+                                                        text-[10px]
+                                                        font-bold
+                                                        uppercase
+                                                        tracking-[0.18em]
+                                                        text-[#ff9b58]
+                                                    "
+                                                >
+                                                    Transcending Psychiatry
+                                                </span>
+
+                                                <h2
+                                                    id="booking-title"
+                                                    className="
+                                                        mt-6
+                                                        pr-14
+                                                        font-serif
+                                                        text-[34px]
+                                                        font-semibold
+                                                        leading-[1.05]
+                                                        tracking-[-0.03em]
+                                                    "
+                                                >
+                                                    Begin Your
+                                                    <span className="block text-[#ff8b49]">Care Journey.</span>
+                                                </h2>
+
+                                                <p
+                                                    className="
+                                                        mt-4
+                                                        text-[13px]
+                                                        leading-6
+                                                        text-white/60
+                                                    "
+                                                >
+                                                    Choose your
+                                                    appointment
+                                                    type, date,
+                                                    and an
+                                                    available
+                                                    appointment
+                                                    time.
+                                                </p>
+
+                                                {/* STEPS */}
+                                                <div className="mt-9 space-y-6">
+                                                    <StepIndicator
+                                                        number={1}
+                                                        title="Visit Type"
+                                                        active={
+                                                            step ===
+                                                            1
+                                                        }
+                                                        complete={
+                                                            step >
+                                                            1
+                                                        }
+                                                    />
+
+                                                    <StepIndicator
+                                                        number={2}
+                                                        title="Date & Time"
+                                                        active={
+                                                            step ===
+                                                            2
+                                                        }
+                                                        complete={
+                                                            step >
+                                                            2
+                                                        }
+                                                    />
+
+                                                    <StepIndicator
+                                                        number={3}
+                                                        title="Your Information"
+                                                        active={
+                                                            step ===
+                                                            3
+                                                        }
+                                                        complete={
+                                                            false
+                                                        }
+                                                    />
+                                                </div>
+
+                                                <div
+                                                    className="
+                                                        mt-10
+                                                        border-t
+                                                        border-white/10
+                                                        pt-6
+                                                    "
+                                                >
+                                                    <p
+                                                        className="
+                                                            text-[10px]
+                                                            uppercase
+                                                            tracking-[0.15em]
+                                                            text-white/35
+                                                        "
+                                                    >
+                                                        Need
+                                                        help?
+                                                    </p>
+
+                                                    <a
+                                                        href="tel:+16465801030"
+                                                        className="
+                                                            mt-3
+                                                            flex
+                                                            items-center
+                                                            gap-2
+                                                            text-[15px]
+                                                            font-semibold
+                                                            text-white
+                                                            transition
+                                                            hover:text-[#ff9b58]
+                                                        "
+                                                    >
+                                                        <Phone className="h-4 w-4 text-[#ff9b58]" />
+                                                        (646)
+                                                        580-1030
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </aside>
+
+                                        {/* =====================
+                                            RIGHT CONTENT
+
+                                            IMPORTANT:
+                                            No max-height on
+                                            mobile. Entire modal
+                                            scrolls.
+
+                                            Desktop gets its own
+                                            internal scroll area.
+                                        ====================== */}
+                                        <div
+                                            className="
+                                                p-6
+                                                sm:p-8
+                                                lg:max-h-[88vh]
+                                                lg:overflow-y-auto
+                                                lg:p-10
+                                            "
+                                        >
+                                            {/* STEP 1 */}
+                                            {step === 1 && (
+                                                <motion.div
+                                                    key="step1"
+                                                    initial={{
+                                                        opacity: 0,
+                                                        x: 20,
+                                                    }}
+                                                    animate={{
+                                                        opacity: 1,
+                                                        x: 0,
+                                                    }}
+                                                >
+                                                    <SectionHeading
+                                                        eyebrow="Step One"
+                                                        title="Choose your appointment"
+                                                        description="Select the type of psychiatric care you would like to schedule."
+                                                    />
+
+                                                    <div className="mt-7 space-y-3">
+                                                        {appointmentTypes.map(
+                                                            (
+                                                                item
+                                                            ) => {
+                                                                const Icon =
+                                                                    item.icon;
+
+                                                                const selected =
+                                                                    appointmentType ===
+                                                                    item.id;
+
+                                                                return (
+                                                                    <button
+                                                                        type="button"
+                                                                        key={
+                                                                            item.id
+                                                                        }
+                                                                        onClick={() =>
+                                                                            setAppointmentType(
+                                                                                item.id
+                                                                            )
+                                                                        }
+                                                                        className={`
+                                                                            group
+                                                                            flex
+                                                                            w-full
+                                                                            items-center
+                                                                            gap-4
+                                                                            rounded-[20px]
+                                                                            border
+                                                                            p-4
+                                                                            text-left
+                                                                            transition-all
+                                                                            duration-300
+                                                                            ${selected
+                                                                                ? "border-[#ff7426] bg-[#fff1e8] shadow-[0_8px_25px_rgba(255,116,38,0.10)]"
+                                                                                : "border-[#252525]/10 bg-white hover:border-[#ff7426]/30 hover:bg-[#fffaf6]"
+                                                                            }
+                                                                        `}
+                                                                    >
+                                                                        <span
+                                                                            className={`
+                                                                                flex
+                                                                                h-12
+                                                                                w-12
+                                                                                shrink-0
+                                                                                items-center
+                                                                                justify-center
+                                                                                rounded-2xl
+                                                                                ${selected
+                                                                                    ? "bg-[#ff7426] text-white"
+                                                                                    : "bg-[#f1f5f7] text-[#ff7426]"
+                                                                                }
+                                                                            `}
+                                                                        >
+                                                                            <Icon className="h-5 w-5" />
+                                                                        </span>
+
+                                                                        <span className="min-w-0 flex-1">
+                                                                            <span className="block text-[14px] font-bold text-[#252525]">
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                            </span>
+
+                                                                            <span className="mt-1 block text-[11px] leading-5 text-[#77706b]">
+                                                                                {
+                                                                                    item.description
+                                                                                }
+                                                                            </span>
+                                                                        </span>
+
+                                                                        <span
+                                                                            className="
+                                                                                hidden
+                                                                                rounded-full
+                                                                                bg-[#fff8f3]
+                                                                                px-3
+                                                                                py-1.5
+                                                                                text-[10px]
+                                                                                font-bold
+                                                                                text-[#69635f]
+                                                                                sm:block
+                                                                            "
+                                                                        >
+                                                                            {
+                                                                                item.duration
+                                                                            }
+                                                                        </span>
+
+                                                                        {selected && (
+                                                                            <span
+                                                                                className="
+                                                                                    flex
+                                                                                    h-7
+                                                                                    w-7
+                                                                                    shrink-0
+                                                                                    items-center
+                                                                                    justify-center
+                                                                                    rounded-full
+                                                                                    bg-[#ff9b58]
+                                                                                    text-[#252525]
+                                                                                "
+                                                                            >
+                                                                                <Check className="h-4 w-4" />
+                                                                            </span>
+                                                                        )}
+                                                                    </button>
+                                                                );
+                                                            }
+                                                        )}
+                                                    </div>
+
+                                                    <NextButton
+                                                        disabled={
+                                                            !appointmentType
+                                                        }
+                                                        onClick={
+                                                            nextStep
+                                                        }
+                                                    >
+                                                        Choose
+                                                        Date
+                                                    </NextButton>
+                                                </motion.div>
+                                            )}
+
+                                            {/* STEP 2 */}
+                                            {step === 2 && (
+                                                <motion.div
+                                                    key="step2"
+                                                    initial={{
+                                                        opacity: 0,
+                                                        x: 20,
+                                                    }}
+                                                    animate={{
+                                                        opacity: 1,
+                                                        x: 0,
+                                                    }}
+                                                >
+                                                    <SectionHeading
+                                                        eyebrow="Step Two"
+                                                        title="Choose a date and time"
+                                                        description="Select your preferred appointment date and an available time."
+                                                    />
+
+                                                    <div
+                                                        className="
+                                                            mt-7
+                                                            grid
+                                                            gap-6
+                                                            xl:grid-cols-[1fr_0.82fr]
+                                                        "
+                                                    >
+                                                        {/* CALENDAR */}
+                                                        <div
+                                                            className="
+                                                                rounded-[22px]
+                                                                border
+                                                                border-[#252525]/10
+                                                                p-4
+                                                                sm:p-5
+                                                            "
+                                                        >
+                                                            <div className="flex items-center justify-between">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() =>
+                                                                        setCurrentMonth(
+                                                                            addMonths(
+                                                                                currentMonth,
+                                                                                -1
+                                                                            )
+                                                                        )
+                                                                    }
+                                                                    className="
+                                                                        flex
+                                                                        h-9
+                                                                        w-9
+                                                                        items-center
+                                                                        justify-center
+                                                                        rounded-full
+                                                                        bg-[#fff8f3]
+                                                                        text-[#252525]
+                                                                    "
+                                                                >
+                                                                    <ChevronLeft className="h-4 w-4" />
+                                                                </button>
+
+                                                                <p
+                                                                    className="
+                                                                        font-serif
+                                                                        text-[18px]
+                                                                        font-semibold
+                                                                        text-[#252525]
+                                                                    "
+                                                                >
+                                                                    {currentMonth.toLocaleDateString(
+                                                                        "en-US",
+                                                                        {
+                                                                            month: "long",
+                                                                            year: "numeric",
+                                                                        }
+                                                                    )}
+                                                                </p>
+
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() =>
+                                                                        setCurrentMonth(
+                                                                            addMonths(
+                                                                                currentMonth,
+                                                                                1
+                                                                            )
+                                                                        )
+                                                                    }
+                                                                    className="
+                                                                        flex
+                                                                        h-9
+                                                                        w-9
+                                                                        items-center
+                                                                        justify-center
+                                                                        rounded-full
+                                                                        bg-[#fff8f3]
+                                                                        text-[#252525]
+                                                                    "
+                                                                >
+                                                                    <ChevronRight className="h-4 w-4" />
+                                                                </button>
+                                                            </div>
+
+                                                            <div
+                                                                className="
+                                                                    mt-5
+                                                                    grid
+                                                                    grid-cols-7
+                                                                    text-center
+                                                                "
+                                                            >
+                                                                {[
+                                                                    "S",
+                                                                    "M",
+                                                                    "T",
+                                                                    "W",
+                                                                    "T",
+                                                                    "F",
+                                                                    "S",
+                                                                ].map(
+                                                                    (
+                                                                        day,
+                                                                        index
+                                                                    ) => (
+                                                                        <span
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                            className="
+                                                                                py-2
+                                                                                text-[9px]
+                                                                                font-bold
+                                                                                uppercase
+                                                                                text-[#aaa19b]
+                                                                            "
+                                                                        >
+                                                                            {
+                                                                                day
+                                                                            }
+                                                                        </span>
+                                                                    )
+                                                                )}
+
+                                                                {days.map(
+                                                                    (
+                                                                        date,
+                                                                        index
+                                                                    ) => {
+                                                                        if (
+                                                                            !date
+                                                                        ) {
+                                                                            return (
+                                                                                <span
+                                                                                    key={`blank-${index}`}
+                                                                                />
+                                                                            );
+                                                                        }
+
+                                                                        const past =
+                                                                            isPastDate(
+                                                                                date
+                                                                            );
+
+                                                                        const selected =
+                                                                            !!selectedDate &&
+                                                                            sameDay(
+                                                                                date,
+                                                                                selectedDate
+                                                                            );
+
+                                                                        return (
+                                                                            <button
+                                                                                type="button"
+                                                                                key={formatDateKey(
+                                                                                    date
+                                                                                )}
+                                                                                disabled={
+                                                                                    past
+                                                                                }
+                                                                                onClick={() => {
+                                                                                    setSelectedDate(
+                                                                                        date
+                                                                                    );
+                                                                                    setSelectedTime(
+                                                                                        ""
+                                                                                    );
+                                                                                }}
+                                                                                className={`
+                                                                                    mx-auto
+                                                                                    my-1
+                                                                                    flex
+                                                                                    h-9
+                                                                                    w-9
+                                                                                    items-center
+                                                                                    justify-center
+                                                                                    rounded-full
+                                                                                    text-[11px]
+                                                                                    font-semibold
+                                                                                    transition
+                                                                                    ${selected
+                                                                                        ? "bg-[#ff7426] text-white shadow-md"
+                                                                                        : past
+                                                                                            ? "cursor-not-allowed text-slate-300"
+                                                                                            : "text-[#4d4844] hover:bg-[#fff1e8] hover:text-[#ff7426]"
+                                                                                    }
+                                                                                `}
+                                                                            >
+                                                                                {date.getDate()}
+                                                                            </button>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* TIMES */}
+                                                        <div>
+                                                            <div className="flex items-center gap-2">
+                                                                <Clock3 className="h-4 w-4 text-[#ff7426]" />
+
+                                                                <p className="text-[12px] font-bold text-[#252525]">
+                                                                    Available
+                                                                    Times
+                                                                </p>
+                                                            </div>
+
+                                                            {!selectedDate ? (
+                                                                <div
+                                                                    className="
+                                                                        mt-4
+                                                                        flex
+                                                                        min-h-[250px]
+                                                                        items-center
+                                                                        justify-center
+                                                                        rounded-[22px]
+                                                                        border
+                                                                        border-dashed
+                                                                        border-[#252525]/15
+                                                                        bg-[#fafbfc]
+                                                                        p-6
+                                                                        text-center
+                                                                    "
+                                                                >
+                                                                    <div>
+                                                                        <CalendarDays className="mx-auto h-7 w-7 text-[#9aabba]" />
+
+                                                                        <p className="mt-3 text-[11px] leading-5 text-[#77706b]">
+                                                                            Select
+                                                                            a
+                                                                            date
+                                                                            to
+                                                                            see
+                                                                            available
+                                                                            times.
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <>
+                                                                    <p className="mt-2 text-[11px] text-[#77706b]">
+                                                                        {selectedDate.toLocaleDateString(
+                                                                            "en-US",
+                                                                            {
+                                                                                weekday:
+                                                                                    "long",
+                                                                                month: "long",
+                                                                                day: "numeric",
+                                                                            }
+                                                                        )}
+                                                                    </p>
+
+                                                                    <div
+                                                                        className="
+                                                                            mt-4
+                                                                            grid
+                                                                            grid-cols-2
+                                                                            gap-2
+                                                                        "
+                                                                    >
+                                                                        {demoTimes.map(
+                                                                            (
+                                                                                time
+                                                                            ) => (
+                                                                                <button
+                                                                                    type="button"
+                                                                                    key={
+                                                                                        time
+                                                                                    }
+                                                                                    onClick={() =>
+                                                                                        setSelectedTime(
+                                                                                            time
+                                                                                        )
+                                                                                    }
+                                                                                    className={`
+                                                                                        min-h-[44px]
+                                                                                        rounded-xl
+                                                                                        border
+                                                                                        px-3
+                                                                                        text-[11px]
+                                                                                        font-bold
+                                                                                        transition
+                                                                                        ${selectedTime ===
+                                                                                            time
+                                                                                            ? "border-[#ff7426] bg-[#ff7426] text-white"
+                                                                                            : "border-[#252525]/10 bg-white text-[#4d4844] hover:border-[#ff7426]/30 hover:bg-[#fff1e8]"
+                                                                                        }
+                                                                                    `}
+                                                                                >
+                                                                                    {
+                                                                                        time
+                                                                                    }
+                                                                                </button>
+                                                                            )
+                                                                        )}
+                                                                    </div>
+
+                                                                    <p
+                                                                        className="
+                                                                            mt-4
+                                                                            rounded-xl
+                                                                            bg-[#fff3ea]
+                                                                            px-3
+                                                                            py-2
+                                                                            text-[9px]
+                                                                            leading-4
+                                                                            text-[#7a6558]
+                                                                        "
+                                                                    >
+                                                                        Demo
+                                                                        availability.
+                                                                        Connect
+                                                                        this
+                                                                        calendar
+                                                                        to
+                                                                        the
+                                                                        practice
+                                                                        schedule
+                                                                        before
+                                                                        launch.
+                                                                    </p>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <NavigationButtons
+                                                        back={() =>
+                                                            setStep(
+                                                                1
+                                                            )
+                                                        }
+                                                        next={
+                                                            nextStep
+                                                        }
+                                                        disabled={
+                                                            !selectedDate ||
+                                                            !selectedTime
+                                                        }
+                                                    />
+                                                </motion.div>
+                                            )}
+
+                                            {/* STEP 3 */}
+                                            {step === 3 && (
+                                                <motion.div
+                                                    key="step3"
+                                                    initial={{
+                                                        opacity: 0,
+                                                        x: 20,
+                                                    }}
+                                                    animate={{
+                                                        opacity: 1,
+                                                        x: 0,
+                                                    }}
+                                                >
+                                                    <SectionHeading
+                                                        eyebrow="Step Three"
+                                                        title="Tell us about yourself"
+                                                        description="Enter your contact information so the practice can follow up regarding your appointment request."
+                                                    />
+
+                                                    {/* APPOINTMENT SUMMARY */}
+                                                    <div
+                                                        className="
+                                                            mt-6
+                                                            grid
+                                                            gap-3
+                                                            rounded-[20px]
+                                                            bg-[#fff8f3]
+                                                            p-4
+                                                            sm:grid-cols-3
+                                                        "
+                                                    >
+                                                        <SummaryItem
+                                                            icon={
+                                                                Stethoscope
+                                                            }
+                                                            label="Appointment"
+                                                            value={
+                                                                appointmentTypes.find(
+                                                                    (
+                                                                        item
+                                                                    ) =>
+                                                                        item.id ===
+                                                                        appointmentType
+                                                                )
+                                                                    ?.name ||
+                                                                ""
+                                                            }
+                                                        />
+
+                                                        <SummaryItem
+                                                            icon={
+                                                                CalendarDays
+                                                            }
+                                                            label="Date"
+                                                            value={
+                                                                selectedDate?.toLocaleDateString(
+                                                                    "en-US",
+                                                                    {
+                                                                        month: "short",
+                                                                        day: "numeric",
+                                                                        year: "numeric",
+                                                                    }
+                                                                ) ||
+                                                                ""
+                                                            }
+                                                        />
+
+                                                        <SummaryItem
+                                                            icon={
+                                                                Clock3
+                                                            }
+                                                            label="Time"
+                                                            value={
+                                                                selectedTime
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <form
+                                                        onSubmit={
+                                                            handleSubmit
+                                                        }
+                                                        className="mt-6"
+                                                    >
+                                                        <div
+                                                            className="
+                                                                grid
+                                                                gap-4
+                                                                sm:grid-cols-2
+                                                            "
+                                                        >
+                                                            <BookingField label="First Name">
+                                                                <input
+                                                                    required
+                                                                    name="firstName"
+                                                                    autoComplete="given-name"
+                                                                    className={
+                                                                        inputClass
+                                                                    }
+                                                                    placeholder="First name"
+                                                                />
+                                                            </BookingField>
+
+                                                            <BookingField label="Last Name">
+                                                                <input
+                                                                    required
+                                                                    name="lastName"
+                                                                    autoComplete="family-name"
+                                                                    className={
+                                                                        inputClass
+                                                                    }
+                                                                    placeholder="Last name"
+                                                                />
+                                                            </BookingField>
+
+                                                            <BookingField label="Email">
+                                                                <input
+                                                                    required
+                                                                    type="email"
+                                                                    name="email"
+                                                                    autoComplete="email"
+                                                                    className={
+                                                                        inputClass
+                                                                    }
+                                                                    placeholder="you@example.com"
+                                                                />
+                                                            </BookingField>
+
+                                                            <BookingField label="Phone">
+                                                                <input
+                                                                    required
+                                                                    type="tel"
+                                                                    name="phone"
+                                                                    autoComplete="tel"
+                                                                    className={
+                                                                        inputClass
+                                                                    }
+                                                                    placeholder="(555) 555-5555"
+                                                                />
+                                                            </BookingField>
+                                                        </div>
+
+                                                        <label
+                                                            className="
+                                                                mt-5
+                                                                flex
+                                                                cursor-pointer
+                                                                items-start
+                                                                gap-3
+                                                                rounded-2xl
+                                                                bg-[#fffaf6]
+                                                                p-4
+                                                            "
+                                                        >
+                                                            <input
+                                                                required
+                                                                type="checkbox"
+                                                                className="
+                                                                    mt-1
+                                                                    h-4
+                                                                    w-4
+                                                                    accent-[#ff7426]
+                                                                "
+                                                            />
+
+                                                            <span
+                                                                className="
+                                                                    text-[10px]
+                                                                    leading-5
+                                                                    text-[#69635f]
+                                                                "
+                                                            >
+                                                                I
+                                                                consent
+                                                                to
+                                                                being
+                                                                contacted
+                                                                by
+                                                                Transcending
+                                                                Psychiatry
+                                                                regarding
+                                                                this
+                                                                appointment.
+                                                                I
+                                                                understand
+                                                                that
+                                                                submitting
+                                                                this
+                                                                form
+                                                                does
+                                                                not
+                                                                establish
+                                                                a
+                                                                provider-patient
+                                                                relationship.
+                                                            </span>
+                                                        </label>
+
+                                                        <div
+                                                            className="
+                                                                mt-4
+                                                                rounded-xl
+                                                                border
+                                                                border-[#ff7426]/20
+                                                                bg-[#fff8f3]
+                                                                p-3
+                                                                text-[9px]
+                                                                leading-4
+                                                                text-[#75665d]
+                                                            "
+                                                        >
+                                                            Please
+                                                            don&apos;t
+                                                            include
+                                                            sensitive
+                                                            medical
+                                                            or
+                                                            psychiatric
+                                                            information
+                                                            in
+                                                            this
+                                                            booking
+                                                            form.
+                                                            This
+                                                            form
+                                                            is
+                                                            not
+                                                            for
+                                                            emergencies.
+                                                        </div>
+
+                                                        <div
+                                                            className="
+                                                                mt-6
+                                                                flex
+                                                                flex-col-reverse
+                                                                gap-3
+                                                                sm:flex-row
+                                                                sm:justify-between
+                                                            "
+                                                        >
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    setStep(
+                                                                        2
+                                                                    )
+                                                                }
+                                                                className="
+                                                                    inline-flex
+                                                                    min-h-[50px]
+                                                                    items-center
+                                                                    justify-center
+                                                                    gap-2
+                                                                    rounded-full
+                                                                    px-5
+                                                                    text-[12px]
+                                                                    font-bold
+                                                                    text-[#69635f]
+                                                                    transition
+                                                                    hover:bg-[#fff8f3]
+                                                                "
+                                                            >
+                                                                <ArrowLeft className="h-4 w-4" />
+                                                                Back
+                                                            </button>
+
+                                                            <button
+                                                                type="submit"
+                                                                disabled={
+                                                                    loading
+                                                                }
+                                                                className="
+                                                                    group
+                                                                    inline-flex
+                                                                    min-h-[52px]
+                                                                    items-center
+                                                                    justify-center
+                                                                    gap-2
+                                                                    rounded-full
+                                                                    bg-[#ff7426]
+                                                                    px-7
+                                                                    text-[13px]
+                                                                    font-bold
+                                                                    text-white
+                                                                    shadow-[0_12px_28px_rgba(255,116,38,0.24)]
+                                                                    transition
+                                                                    hover:bg-[#eb641b]
+                                                                    disabled:opacity-60
+                                                                "
+                                                            >
+                                                                {loading
+                                                                    ? "Booking..."
+                                                                    : "Book Appointment"}
+
+                                                                {!loading && (
+                                                                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                                                )}
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </motion.div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </motion.div>
+
+                            {/* CLOSE CENTERING WRAPPER */}
+                        </div>
+
+                        {/* CLOSE FIXED SCROLL WRAPPER */}
+                    </div>
+                </>
+            )}
+        </AnimatePresence>
+    );
+}
+
+/* =========================================================
+   SMALL COMPONENTS
+========================================================= */
+
+function SectionHeading({
+    eyebrow,
+    title,
+    description,
+}: {
+    eyebrow: string;
+    title: string;
+    description: string;
+}) {
+    return (
+        <div className="pr-12">
+            <p
+                className="
+                    text-[10px]
+                    font-bold
+                    uppercase
+                    tracking-[0.18em]
+                    text-[#e6601c]
+                "
+            >
+                {eyebrow}
+            </p>
+
+            <h3
+                className="
+                    mt-2
+                    font-serif
+                    text-[27px]
+                    font-semibold
+                    leading-tight
+                    text-[#252525]
+                    sm:text-[32px]
+                "
+            >
+                {title}
+            </h3>
+
+            <p className="mt-2 max-w-[570px] text-[12px] leading-6 text-[#77706b]">
+                {description}
+            </p>
+        </div>
+    );
+}
+
+function StepIndicator({
+    number,
+    title,
+    active,
+    complete,
+}: {
+    number: number;
+    title: string;
+    active: boolean;
+    complete: boolean;
+}) {
+    return (
+        <div className="flex items-center gap-3">
+            <span
+                className={`
+                    flex
+                    h-9
+                    w-9
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    border
+                    text-[11px]
+                    font-bold
+                    ${complete
+                        ? "border-[#ff9b58] bg-[#ff9b58] text-[#252525]"
+                        : active
+                            ? "border-white bg-white text-[#252525]"
+                            : "border-white/15 bg-white/[0.04] text-white/40"
+                    }
+                `}
+            >
+                {complete ? (
+                    <Check className="h-4 w-4" />
+                ) : (
+                    number
+                )}
+            </span>
+
+            <span
+                className={`
+                    text-[12px]
+                    font-semibold
+                    ${active || complete
+                        ? "text-white"
+                        : "text-white/35"
+                    }
+                `}
+            >
+                {title}
+            </span>
+        </div>
+    );
+}
+
+function NextButton({
+    disabled,
+    onClick,
+    children,
+}: {
+    disabled: boolean;
+    onClick: () => void;
+    children: ReactNode;
+}) {
+    return (
+        <div className="mt-7 flex justify-end">
+            <button
+                type="button"
+                disabled={disabled}
+                onClick={onClick}
+                className="
+                    group
+                    inline-flex
+                    min-h-[52px]
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-full
+                    bg-[#ff7426]
+                    px-7
+                    text-[13px]
+                    font-bold
+                    text-white
+                    transition
+                    hover:bg-[#eb641b]
+                    disabled:cursor-not-allowed
+                    disabled:opacity-35
+                "
+            >
+                {children}
+
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </button>
+        </div>
+    );
+}
+
+function NavigationButtons({
+    back,
+    next,
+    disabled,
+}: {
+    back: () => void;
+    next: () => void;
+    disabled: boolean;
+}) {
+    return (
+        <div
+            className="
+                mt-7
+                flex
+                items-center
+                justify-between
+                gap-3
+            "
+        >
+            <button
+                type="button"
+                onClick={back}
+                className="
+                    inline-flex
+                    min-h-[50px]
+                    items-center
+                    gap-2
+                    rounded-full
+                    px-4
+                    text-[12px]
+                    font-bold
+                    text-[#69635f]
+                "
+            >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+            </button>
+
+            <button
+                type="button"
+                disabled={disabled}
+                onClick={next}
+                className="
+                    group
+                    inline-flex
+                    min-h-[50px]
+                    items-center
+                    gap-2
+                    rounded-full
+                    bg-[#ff7426]
+                    px-6
+                    text-[12px]
+                    font-bold
+                    text-white
+                    disabled:opacity-35
+                "
+            >
+                Continue
+
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </button>
+        </div>
+    );
+}
+
+function BookingField({
+    label,
+    children,
+}: {
+    label: string;
+    children: ReactNode;
+}) {
+    return (
+        <label>
+            <span className="mb-2 block text-[10px] font-bold text-[#4d4844]">
+                {label}
+                <span className="ml-1 text-[#e6601c]">
+                    *
+                </span>
+            </span>
+
+            {children}
+        </label>
+    );
+}
+
+function SummaryItem({
+    icon: Icon,
+    label,
+    value,
+}: {
+    icon: ElementType;
+    label: string;
+    value: string;
+}) {
+    return (
+        <div className="flex items-start gap-2">
+            <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#ff7426]" />
+
+            <div className="min-w-0">
+                <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-[#aaa19b]">
+                    {label}
+                </p>
+
+                <p className="mt-1 text-[10px] font-semibold leading-4 text-[#4d4844]">
+                    {value}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+/* =========================================================
+   SUCCESS
+========================================================= */
+
+function BookingSuccess({
+    appointmentTypes,
+    appointmentType,
+    date,
+    time,
+    onClose,
+}: {
+    appointmentTypes: AppointmentType[];
+    appointmentType: string;
+    date: Date | null;
+    time: string;
+    onClose: () => void;
+}) {
+    const appointment =
+        appointmentTypes.find(
+            (item) =>
+                item.id === appointmentType
+        );
+
+    return (
+        <div className="px-6 py-16 text-center sm:px-10 sm:py-20">
+            <motion.div
+                initial={{
+                    scale: 0.7,
+                    opacity: 0,
+                }}
+                animate={{
+                    scale: 1,
+                    opacity: 1,
+                }}
+                className="
+                    mx-auto
+                    flex
+                    h-16
+                    w-16
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-[#252525]
+                    text-[#ff9b58]
+                "
+            >
+                <Check className="h-7 w-7" />
+            </motion.div>
+
+            <p className="mt-7 text-[10px] font-bold uppercase tracking-[0.2em] text-[#e6601c]">
+                Transcending Psychiatry
+            </p>
+
+            <h2 className="mt-2 font-serif text-[36px] font-semibold text-[#252525]">
+                Appointment Requested
+            </h2>
+
+            <p className="mx-auto mt-4 max-w-[500px] text-[13px] leading-6 text-[#69635f]">
+                We received your appointment
+                request. The practice will confirm
+                the appointment details with you.
+            </p>
+
+            <div
+                className="
+                    mx-auto
+                    mt-7
+                    grid
+                    max-w-[600px]
+                    gap-3
+                    rounded-[22px]
+                    bg-[#fff8f3]
+                    p-5
+                    sm:grid-cols-3
+                "
+            >
+                <SummaryItem
+                    icon={Stethoscope}
+                    label="Appointment"
+                    value={
+                        appointment?.name || ""
+                    }
+                />
+
+                <SummaryItem
+                    icon={CalendarDays}
+                    label="Date"
+                    value={
+                        date?.toLocaleDateString(
+                            "en-US",
+                            {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                            }
+                        ) || ""
+                    }
+                />
+
+                <SummaryItem
+                    icon={Clock3}
+                    label="Time"
+                    value={time}
+                />
+            </div>
+
+            <button
+                type="button"
+                onClick={onClose}
+                className="
+                    mt-8
+                    rounded-full
+                    bg-[#252525]
+                    px-8
+                    py-3.5
+                    text-[13px]
+                    font-bold
+                    text-white
+                    transition
+                    hover:bg-[#ff7426]
+                "
+            >
+                Done
+            </button>
+        </div>
+    );
+}
+
+/* =========================================================
+   CALENDAR HELPERS
+========================================================= */
+
+function startOfMonth(date: Date) {
+    return new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        1
+    );
+}
+
+function addMonths(
+    date: Date,
+    amount: number
+) {
+    return new Date(
+        date.getFullYear(),
+        date.getMonth() + amount,
+        1
+    );
+}
+
+function getCalendarDays(
+    month: Date
+): (Date | null)[] {
+    const year = month.getFullYear();
+    const monthIndex = month.getMonth();
+
+    const firstDay = new Date(
+        year,
+        monthIndex,
+        1
+    );
+
+    const lastDay = new Date(
+        year,
+        monthIndex + 1,
+        0
+    );
+
+    const result: (Date | null)[] = [];
+
+    for (
+        let i = 0;
+        i < firstDay.getDay();
+        i++
+    ) {
+        result.push(null);
+    }
+
+    for (
+        let day = 1;
+        day <= lastDay.getDate();
+        day++
+    ) {
+        result.push(
+            new Date(
+                year,
+                monthIndex,
+                day
+            )
+        );
+    }
+
+    return result;
+}
+
+function sameDay(
+    first: Date,
+    second: Date
+) {
+    return (
+        first.getFullYear() ===
+        second.getFullYear() &&
+        first.getMonth() ===
+        second.getMonth() &&
+        first.getDate() ===
+        second.getDate()
+    );
+}
+
+function isPastDate(date: Date) {
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    const comparison = new Date(date);
+
+    comparison.setHours(0, 0, 0, 0);
+
+    return comparison < today;
+}
+
+function formatDateKey(date: Date) {
+    const year = date.getFullYear();
+
+    const month = String(
+        date.getMonth() + 1
+    ).padStart(2, "0");
+
+    const day = String(
+        date.getDate()
+    ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+const inputClass = `
+    h-[52px]
+    w-full
+    rounded-xl
+    border
+    border-[#252525]/10
+    bg-[#fffaf6]
+    px-4
+    text-[14px]
+    text-[#252525]
+    outline-none
+    transition
+    placeholder:text-[#aaa19b]
+    focus:border-[#ff7426]/40
+    focus:bg-white
+    focus:ring-4
+    focus:ring-[#ff7426]/[0.06]
+`;
+
+/* =========================================================
+   ARTWORK
+========================================================= */
+
+function BookingArtwork() {
+    return (
+        <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-20 -right-44 h-[520px] w-[620px] opacity-[0.16]"
+        >
+            <motion.div
+                initial={{ x: -30, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                className="absolute left-0 top-16 h-[330px] w-[330px] rounded-full border-2 border-[#FF5A1F]"
+            />
+            <motion.div
+                initial={{ y: -30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.9, delay: 0.1 }}
+                className="absolute left-24 top-16 h-[330px] w-[330px] rounded-full border-2 border-[#FF7A2F]"
+            />
+            <motion.div
+                initial={{ x: 30, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 1, delay: 0.2 }}
+                className="absolute left-48 top-16 h-[330px] w-[330px] rounded-full border-2 border-[#FF9B58]"
+            />
+        </div>
+    );
+}
