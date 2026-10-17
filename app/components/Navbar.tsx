@@ -4,10 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import ReferralFormButton from "./ReferralFormButton";
+import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import {
     ArrowRight,
     Mail,
+    LayoutDashboard,
+    LogIn,
     Menu,
     Phone,
     X,
@@ -37,6 +40,12 @@ const emailHref = "mailto:support@ebenezerhouseofhope.com";
 
 export default function Navbar() {
     const pathname = usePathname();
+    const { isLoaded, isSignedIn, user } = useUser();
+
+    const isAdmin: boolean =
+        isLoaded &&
+        isSignedIn === true &&
+        user?.publicMetadata?.role === "admin";
     const [mobileOpen, setMobileOpen] = useState(false);
     const [navVisible, setNavVisible] = useState(true);
     const lastScrollY = useRef(0);
@@ -335,10 +344,55 @@ export default function Navbar() {
                         />
                     </div>
                     {/* =================================================
+               DESKTOP ACCOUNT CONTROLS
+          ================================================== */}
+                    <div className="hidden items-center gap-2 lg:flex">
+                        {isLoaded && (
+                            <>
+                                {!isSignedIn ? (
+                                    <SignInButton mode="modal">
+                                        <button type="button">
+                                            Log In
+                                        </button>
+                                    </SignInButton>
+                                ) : (
+                                    <>
+                                        {isAdmin && (
+                                            <Link
+                                                href="/Dashboard"
+                                                className="
+            inline-flex h-11 items-center gap-2
+            rounded-full bg-[#0b512f]
+            px-4 text-xs font-semibold text-white
+            transition-colors hover:bg-[#073d27]
+        "
+                                            >
+                                                <LayoutDashboard className="h-4 w-4" />
+                                                Dashboard
+                                            </Link>
+                                        )}
+
+                                        <UserButton />
+                                    </>
+                                )}
+                            </>
+                        )}
+                    </div>
+                    {/* =================================================
               MOBILE CONTACT + MENU
           ================================================== */}
 
                     <div className="flex items-center gap-2 lg:hidden">
+                        {isLoaded && !isSignedIn && (
+                            <SignInButton mode="modal">
+                                <button type="button" aria-label="Log in" className="flex h-11 w-11 items-center justify-center rounded-full border border-[#0b512f]/10 bg-[#edf3e8] text-[#0b512f]">
+                                    <LogIn className="h-5 w-5" />
+                                </button>
+                            </SignInButton>
+                        )}
+                        {isLoaded && isSignedIn && (
+                            <UserButton />
+                        )}
                         {/* PHONE */}
 
                         <a
@@ -681,6 +735,35 @@ export default function Navbar() {
                             {/* =================================================
                   MOBILE CTA
               ================================================== */}
+
+                            {/* Account links in mobile drawer */}
+                            <div className="mt-5">
+                                {/* SIGNED OUT — SHOW LOGIN */}
+                                {isLoaded && !isSignedIn && (
+                                    <SignInButton mode="modal">
+                                        <button
+                                            type="button"
+                                            onClick={() => setMobileOpen(false)}
+                                            className="flex min-h-11 w-full items-center gap-3 rounded-xl bg-[#edf3e8] px-4 font-semibold text-[#0b512f]"
+                                        >
+                                            <LogIn className="h-5 w-5" />
+                                            Log In
+                                        </button>
+                                    </SignInButton>
+                                )}
+
+                                {/* SIGNED IN — ADMIN DASHBOARD */}
+                                {isLoaded && isSignedIn && isAdmin && (
+                                    <Link
+                                        href="/Dashboard"
+                                        onClick={() => setMobileOpen(false)}
+                                        className="flex min-h-11 w-full items-center gap-3 rounded-xl bg-[#edf3e8] px-4 font-semibold text-[#0b512f]"
+                                    >
+                                        <LayoutDashboard className="h-5 w-5" />
+                                        Dashboard
+                                    </Link>
+                                )}
+                            </div>
 
                             <div className="mt-6 w-full">
                                 <ReferralFormButton

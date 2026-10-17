@@ -41,24 +41,42 @@ export default function FooterContactForm() {
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
         if (status === "sending") return;
 
         setStatus("sending");
 
         try {
-            const response = await fetch("/api/contact", {
+            // Convert footer fields to the existing referral API format.
+            const payload = {
+                name: form.name.trim(),
+                email: form.email.trim(),
+                phone: form.phone.trim(),
+                organization: "",
+                reason: form.subject,
+                message: form.message.trim(),
+            };
+
+            const response = await fetch("/api/referrals", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
             });
 
-            if (!response.ok) {
-                throw new Error("Unable to send message");
+            const result = await response.json().catch(() => null);
+
+            if (!response.ok || result?.success !== true) {
+                throw new Error(
+                    result?.error || "Unable to send message"
+                );
             }
 
             setStatus("success");
             setForm(initialState);
-        } catch {
+        } catch (error) {
+            console.error("Footer contact form error:", error);
             setStatus("error");
         }
     };

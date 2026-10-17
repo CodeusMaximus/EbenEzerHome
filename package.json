@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.10",
+    "@react-email/components": "^1.0.12",
+    "@react-email/render": "^2.1.1",
     "@vercel/blob": "^2.8.0",
     "framer-motion": "^13.2.0",
     "gsap": "^3.15.0",
@@ -20,6 +22,7 @@
     "react-dom": "19.2.8",
     "react-icons": "^5.7.0",
     "react-markdown": "^10.1.0",
+    "resend": "^6.34.1",
     "slugify": "^1.6.9"
   },
   "devDependencies": {

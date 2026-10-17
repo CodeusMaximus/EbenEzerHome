@@ -53,7 +53,7 @@ export async function connectToDatabase() {
   }
 
   const client = await clientPromise;
-  const db = client.db("Joesite");
+  const db = client.db("Ebenezer");
   return { client, db };
 }
 

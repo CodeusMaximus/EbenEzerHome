@@ -7,7 +7,7 @@ import {
 import { NextResponse } from "next/server";
 
 const ADMIN_EMAILS = [
-    " ",
+    "poinsettias42@gmail.com",
     "dfsturge@gmail.com",
 ];
 
