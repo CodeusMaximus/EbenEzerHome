@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import ReferralFormButton from "./ReferralFormButton";
+import { usePathname } from "next/navigation";
 import {
     ArrowRight,
     Mail,
@@ -15,23 +17,26 @@ const navLinks = [
     { label: "Home", href: "/" },
     { label: "About", href: "/#about" },
     { label: "Our Program", href: "/#program" },
-    { label: "Admissions", href: "/#admissions" },
+    { label: "Admissions", href: "/admissions" },
     { label: "Resources", href: "/resources" },
+    { label: "Blog", href: "/blog" },
     { label: "FAQ", href: "/#faq" },
     { label: "Contact", href: "/#contact" },
+    { label: "Location", href: "/location" },
 ];
 
 /*
  * Replace these when the client provides
  * the real contact information.
  */
-const phoneDisplay = "(000) 000-0000";
-const phoneHref = "tel:+10000000000";
+const phoneDisplay = "(516) 962-1123";
+const phoneHref = "tel:+15169621123";
 
-const emailDisplay = "info@ebenezerhouseofhope.com";
-const emailHref = "mailto:info@ebenezerhouseofhope.com";
+const emailDisplay = "support@ebenezerhouseofhope.com";
+const emailHref = "mailto:support@ebenezerhouseofhope.com";
 
 export default function Navbar() {
+    const pathname = usePathname();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [navVisible, setNavVisible] = useState(true);
     const lastScrollY = useRef(0);
@@ -297,71 +302,38 @@ export default function Navbar() {
               DESKTOP NAVIGATION
           ================================================== */}
 
-                    <div
-                        className="
-              hidden
-              items-center
-              gap-5
-              lg:flex
-              xl:gap-7
-            "
-                    >
-                        {navLinks.map((link, index) => (
-                            <DesktopNavLink
-                                key={link.label}
-                                href={link.href}
-                                active={index === 0}
-                            >
-                                {link.label}
-                            </DesktopNavLink>
-                        ))}
+                    {/* DESKTOP NAVIGATION */}
+                    <div className="hidden items-center gap-0.5 lg:flex xl:gap-1">
+                        {navLinks.map((link) => {
+                            const active =
+                                link.href === "/"
+                                    ? pathname === "/"
+                                    : !link.href.includes("#") &&
+                                    (pathname === link.href ||
+                                        pathname.startsWith(`${link.href}/`));
+
+                            return (
+                                <DesktopNavLink
+                                    key={link.label}
+                                    href={link.href}
+                                    active={active}
+                                >
+                                    {link.label}
+                                </DesktopNavLink>
+                            );
+                        })}
                     </div>
 
                     {/* =================================================
               DESKTOP CTA
           ================================================== */}
 
-                    <Link
-                        href="/apply"
-                        className="
-              group
-              hidden
-              min-h-[50px]
-              shrink-0
-              items-center
-              justify-center
-              gap-2.5
-              rounded-full
-              bg-[#0b512f]
-              px-6
-              py-3
-              text-[12px]
-              font-semibold
-              text-white
-              shadow-[0_8px_24px_rgba(11,81,47,0.18)]
-              transition-all
-              duration-300
-              hover:-translate-y-0.5
-              hover:bg-[#073d23]
-              hover:shadow-[0_12px_28px_rgba(11,81,47,0.25)]
-              lg:flex
-              xl:px-7
-              xl:text-[13px]
-            "
-                    >
-                        Apply for Housing
-
-                        <ArrowRight
-                            className="
-                h-4
-                w-4
-                transition-transform
-                duration-300
-                group-hover:translate-x-1
-              "
+                    <div className="hidden shrink-0 lg:flex">
+                        <ReferralFormButton
+                            label="Apply for Housing"
+                            className="!h-[42px] !min-h-0 !px-5 !py-0 !text-[13px]"
                         />
-                    </Link>
-
+                    </div>
                     {/* =================================================
               MOBILE CONTACT + MENU
           ================================================== */}
@@ -710,41 +682,20 @@ export default function Navbar() {
                   MOBILE CTA
               ================================================== */}
 
-                            <Link
-                                href="/apply"
-                                onClick={() => setMobileOpen(false)}
-                                className="
-                  group
-                  mt-8
-                  flex
-                  min-h-[56px]
-                  w-full
-                  items-center
-                  justify-center
-                  gap-3
-                  rounded-full
-                  bg-[#0b512f]
-                  px-6
-                  py-4
-                  text-[15px]
-                  font-semibold
-                  text-white
-                  shadow-[0_12px_30px_rgba(11,81,47,0.20)]
-                  transition-all
-                  hover:bg-[#073d23]
-                "
-                            >
-                                Apply for Housing
-
-                                <ArrowRight
+                            <div className="mt-6 w-full">
+                                <ReferralFormButton
+                                    label="Apply for Housing"
                                     className="
-                    h-5
-                    w-5
-                    transition-transform
-                    group-hover:translate-x-1
-                  "
+            !h-[64px]
+            !min-h-0
+            !w-full
+            !px-8
+            !py-0
+            !text-[17px]
+            !font-bold
+        "
                                 />
-                            </Link>
+                            </div>
 
                             {/* =================================================
                   MISSION
@@ -822,40 +773,35 @@ function DesktopNavLink({
     return (
         <Link
             href={href}
-            className="
-        group
-        relative
-        flex
-        h-[104px]
-        items-center
-        whitespace-nowrap
-        text-[12px]
-        font-semibold
-        text-[#294234]
-        transition-colors
-        duration-300
-        hover:text-[#0b512f]
-        xl:text-[13px]
-      "
+            aria-current={active ? "page" : undefined}
+            className={`
+                group relative inline-flex h-[42px]
+                shrink-0 items-center justify-center
+                whitespace-nowrap rounded-full
+                px-2.5 xl:px-3
+                text-[11px] xl:text-[12px]
+                font-semibold tracking-[0.01em]
+                transition-all duration-300
+                hover:-translate-y-[1px]
+                ${active
+                    ? "bg-[#eaf1e7] text-[#0b512f]"
+                    : "text-[#344d3d] hover:bg-[#f0f3e9] hover:text-[#0b512f]"
+                }
+            `}
         >
             {children}
 
             <span
                 className={`
-          absolute
-          bottom-[25px]
-          left-1/2
-          h-[2px]
-          -translate-x-1/2
-          rounded-full
-          bg-[#b28c42]
-          transition-all
-          duration-300
-          ${active
-                        ? "w-full"
-                        : "w-0 group-hover:w-full"
+                    absolute bottom-[6px] left-1/2
+                    h-[2px] -translate-x-1/2
+                    rounded-full bg-[#b8954f]
+                    transition-all duration-300
+                    ${active
+                        ? "w-5 opacity-100"
+                        : "w-0 opacity-0 group-hover:w-5 group-hover:opacity-100"
                     }
-        `}
+                `}
             />
         </Link>
     );

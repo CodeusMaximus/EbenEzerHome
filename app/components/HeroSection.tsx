@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import ReferralFormButton from "./ReferralFormButton";
 import {
     ArrowRight,
     BookOpen,
@@ -340,41 +341,10 @@ export default function HeroSection() {
                 sm:items-center
               "
                         >
-                            <Link
-                                href="/apply"
-                                className="
-                  group
-                  inline-flex
-                  min-h-[54px]
-                  items-center
-                  justify-center
-                  gap-3
-                  rounded-full
-                  bg-[#0b512f]
-                  px-7
-                  py-4
-                  text-[14px]
-                  font-semibold
-                  text-white
-                  shadow-[0_14px_35px_rgba(11,81,47,0.23)]
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:bg-[#073d23]
-                "
-                            >
-                                Apply for Housing
-
-                                <ArrowRight
-                                    className="
-                    h-4
-                    w-4
-                    transition-transform
-                    duration-300
-                    group-hover:translate-x-1
-                  "
-                                />
-                            </Link>
+                            <ReferralFormButton
+                                label="Apply for Housing"
+                                className="w-full sm:w-auto sm:min-w-[270px] !h-[54px] !min-h-0 text-[14px]"
+                            />
 
                             <Link
                                 href="/#program"

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-
+import CookieConsent from "./components/CookieConsent";
 import { LanguageProvider } from "./components/LanguageContext";
 import SiteChrome from "./components/SiteChrome";
-import BookingProvider from "./components/BookingProvider";
-
 import "./globals.css";
+import ReferralFormProvider from "./components/referralformprovider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,43 +17,80 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+
 export const metadata: Metadata = {
   /*
    * ============================================================
    * EBEN-EZER HOUSE OF HOPE
+   * SEO METADATA — LONG ISLAND, NEW YORK
    * ============================================================
    *
-   * No metadataBase or canonical URL yet because the production
-   * domain has not been selected.
+   * The organization is currently searching for its
+   * residential property on Long Island.
    *
-   * Add those once the live domain is connected.
+   * No metadataBase or canonical URL is configured yet
+   * because the production domain has not been selected.
    */
 
   title: {
-    default: "Eben-Ezer House of Hope | Sober Living in Brooklyn, NY",
+    default:
+      "Eben-Ezer House of Hope | Recovery Housing on Long Island, NY",
     template: "%s | Eben-Ezer House of Hope",
   },
 
   description:
-    "Eben-Ezer House of Hope is establishing a supportive sober living community in Brooklyn, New York, built around structure, accountability, fellowship, dignity, and renewed hope.",
+    "Eben-Ezer House of Hope is developing a supportive sober living and recovery housing community on Long Island, New York. Our mission is to help individuals build stability, independence, and renewed hope through structure, accountability, fellowship, and compassionate support.",
 
   keywords: [
+    // Organization
     "Eben-Ezer House of Hope",
-    "sober living Brooklyn",
-    "sober living Brooklyn NY",
-    "sober living New York",
-    "recovery housing Brooklyn",
-    "recovery residence Brooklyn",
+    "Ebenezer House of Hope",
+    "Eben Ezer House of Hope",
+
+    // Long Island
+    "sober living Long Island",
+    "sober living Long Island NY",
+    "recovery housing Long Island",
+    "recovery residences Long Island",
+    "transitional housing Long Island",
+    "supportive housing Long Island",
+    "recovery support Long Island",
+
+    // Nassau County
+    "sober living Nassau County",
+    "recovery housing Nassau County",
+    "transitional housing Nassau County",
+    "supportive housing Nassau County",
+
+    // Suffolk County
+    "sober living Suffolk County",
+    "recovery housing Suffolk County",
+    "transitional housing Suffolk County",
+    "supportive housing Suffolk County",
+
+    // Programs and services
     "supportive sober living",
     "structured sober living",
-    "sober living community",
-    "recovery support Brooklyn",
-    "substance free living Brooklyn",
-    "recovery community New York",
-    "transitional sober living",
-    "independent living recovery",
+    "recovery community",
+    "substance free living",
+    "recovery support services",
+    "community based recovery support",
+    "independent living support",
+    "structured recovery housing",
+    "transitional recovery housing",
+    "recovery focused housing",
+
+    // Mission and values
+    "faith based recovery support",
+    "compassionate recovery housing",
+    "accountability in recovery",
+    "community support for recovery",
+    "rebuilding lives through recovery",
+
+    // Broader region
+    "sober living New York",
     "recovery housing New York",
-    "Brooklyn recovery support",
+    "supportive recovery residences New York",
   ],
 
   authors: [
@@ -64,37 +100,48 @@ export const metadata: Metadata = {
   ],
 
   creator: "Eben-Ezer House of Hope",
+
   publisher: "Eben-Ezer House of Hope",
 
   applicationName: "Eben-Ezer House of Hope",
 
-  category: "Sober Living and Recovery Support",
+  category: "Recovery Housing and Supportive Living",
 
   /*
    * ============================================================
    * OPEN GRAPH
+   * Facebook, LinkedIn, and other social platforms
    * ============================================================
-   *
-   * No absolute URL yet because the production domain
-   * has not been established.
    */
 
   openGraph: {
     type: "website",
+
     locale: "en_US",
 
     siteName: "Eben-Ezer House of Hope",
 
     title:
-      "Eben-Ezer House of Hope | Sober Living in Brooklyn, NY",
+      "Eben-Ezer House of Hope | A New Beginning on Long Island",
 
     description:
-      "A supportive sober living community being established in Brooklyn, New York, where individuals in recovery can rebuild their lives through structure, community, accountability, and renewed hope.",
+      "A supportive recovery housing community in development on Long Island, New York. Built on faith, dignity, accountability, community, and the belief that every person deserves an opportunity for a new beginning.",
+
+    // Add an Open Graph image when available:
+    // images: [
+    //   {
+    //     url: "/images/og-image.jpg",
+    //     width: 1200,
+    //     height: 630,
+    //     alt: "Eben-Ezer House of Hope",
+    //   },
+    // ],
   },
 
   /*
    * ============================================================
-   * SOCIAL SHARING
+   * TWITTER / X
+   * Social sharing metadata
    * ============================================================
    */
 
@@ -102,21 +149,25 @@ export const metadata: Metadata = {
     card: "summary_large_image",
 
     title:
-      "Eben-Ezer House of Hope | Sober Living in Brooklyn, NY",
+      "Eben-Ezer House of Hope | Recovery Housing on Long Island",
 
     description:
-      "Building a strong foundation for recovery through structure, community, accountability, dignity, and renewed hope.",
+      "Building a foundation for recovery, stability, and renewed hope. Discover Eben-Ezer House of Hope, a supportive living community in development on Long Island, New York.",
   },
 
   /*
    * ============================================================
-   * SEARCH ENGINES
+   * SEARCH ENGINE INDEXING
    * ============================================================
    *
-   * KEEP FALSE WHILE THE WEBSITE IS UNDER DEVELOPMENT.
+   * IMPORTANT:
    *
-   * Change these to true when the real domain is connected
-   * and the website is ready for public indexing.
+   * Keep indexing disabled while the website is
+   * under development.
+   *
+   * When the production domain is connected and
+   * the organization is ready for public visibility,
+   * change index and follow to true.
    */
 
   robots: {
@@ -144,9 +195,12 @@ export default function RootLayout({
       >
         <body>
           <LanguageProvider>
-            <BookingProvider>
-              <SiteChrome>{children}</SiteChrome>
-            </BookingProvider>
+            <ReferralFormProvider>
+              <CookieConsent />
+              <SiteChrome>{children}
+
+              </SiteChrome>
+            </ReferralFormProvider>
           </LanguageProvider>
         </body>
       </html>

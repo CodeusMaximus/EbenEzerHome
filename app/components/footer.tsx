@@ -9,7 +9,8 @@ import {
     Phone,
     Heart,
 } from "lucide-react";
-
+import ReferralFormButton from "./ReferralFormButton";
+import FooterContactForm from "./FooterContactForm";
 import {
     FaFacebookF,
     FaInstagram,
@@ -47,9 +48,11 @@ const quickLinks = [
     ["Home", "/"],
     ["About Us", "/#about"],
     ["Our Program", "/#program"],
-    ["Admissions", "/#admissions"],
+    ["Admissions", "/admissions"],
     ["Resources", "/resources"],
     ["FAQ", "/#faq"],
+    ["Blog", "/blog"],
+    ["Location", "/location"],
     ["Contact", "/#contact"],
 ];
 
@@ -220,45 +223,13 @@ export default function Footer() {
                         </p>
                     </div>
 
-                    <Link
-                        href="/apply"
-                        className="
-              group
-              inline-flex
-              min-h-[56px]
-              w-fit
-              shrink-0
-              items-center
-              justify-center
-              gap-3
-              rounded-full
-              bg-[#d1ad63]
-              px-8
-              py-4
-              text-[14px]
-              font-bold
-              text-[#073d27]
-              shadow-[0_14px_35px_rgba(0,0,0,0.15)]
-              transition-all
-              duration-300
-              hover:-translate-y-1
-              hover:bg-[#e1c27d]
-            "
-                    >
-                        Apply for Housing
-
-                        <ArrowRight
-                            className="
-                h-4
-                w-4
-                transition-transform
-                duration-300
-                group-hover:translate-x-1
-              "
-                        />
-                    </Link>
+                    <ReferralFormButton
+                        label="Apply for Housing"
+                        className="w-full sm:w-auto sm:min-w-[270px] lg:min-h-[72px] lg:text-[17px]"
+                    />
                 </div>
 
+                <FooterContactForm />
                 {/* =====================================================
             MAIN FOOTER
         ====================================================== */}
@@ -568,7 +539,7 @@ export default function Footer() {
                                     </span>
 
                                     <span className="mt-1 block">
-                                        (000) 000-0000
+                                        (516) 962-1123
                                     </span>
                                 </span>
                             </a>
@@ -613,7 +584,7 @@ export default function Footer() {
                       break-all
                     "
                                     >
-                                        info@ebenezerhouseofhope.com
+                                        support@ebenezerhouseofhope.com
                                     </span>
                                 </span>
                             </a>

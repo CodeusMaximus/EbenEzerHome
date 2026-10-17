@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import ReferralFormButton from "../components/ReferralFormButton";
 import {
     ArrowRight,
     Check,
@@ -52,6 +53,7 @@ const fadeUp = {
 
 export default function ServicesSection() {
     return (
+
         <section
             id="program"
             className="
@@ -59,11 +61,75 @@ export default function ServicesSection() {
         scroll-mt-28
         overflow-hidden
         bg-[#f7f6ed]
-        py-20
-        sm:py-24
-        lg:py-32
+        pt-8
+pb-20
+sm:pt-10
+sm:pb-24
+lg:pt-12
+lg:pb-32
       "
         >
+
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="
+    relative z-10
+    mb-10
+    flex flex-col
+    items-start
+    gap-6
+    rounded-[30px]
+    bg-[#e9efe3]
+    px-7 py-8
+    sm:px-10 sm:py-9
+    lg:mb-12
+    lg:flex-row
+    lg:items-center
+    lg:justify-between
+    lg:gap-10
+    lg:px-12 lg:py-10
+  "
+            >
+                <div className="max-w-[760px]">
+                    <p
+                        className="
+        font-serif
+        text-[26px]
+        font-semibold
+        tracking-[-0.02em]
+        text-[#153d29]
+        sm:text-[32px]
+        lg:text-[36px]
+      "
+                    >
+                        Ready to build your next chapter?
+                    </p>
+
+                    <p
+                        className="
+        mt-3
+        max-w-[680px]
+        text-[15px]
+        leading-7
+        text-[#617065]
+        sm:text-[16px]
+      "
+                    >
+                        Begin with a conversation. We&apos;ll help you understand the
+                        admissions process and determine whether Eben-Ezer House of Hope
+                        may be the right fit.
+                    </p>
+                </div>
+
+                <ReferralFormButton
+                    label="Apply for Housing"
+                    className="w-full sm:w-auto sm:min-w-[270px] lg:min-h-[72px] lg:text-[17px]"
+                />
+            </motion.div>
+
             {/* =====================================================
           BACKGROUND DECORATION
       ====================================================== */}
@@ -128,6 +194,7 @@ export default function ServicesSection() {
             INTRO
         ====================================================== */}
 
+
                 <div
                     className="
             grid
@@ -137,6 +204,7 @@ export default function ServicesSection() {
             lg:gap-20
           "
                 >
+
                     <motion.div
                         variants={fadeUp}
                         initial="hidden"
@@ -635,98 +703,7 @@ export default function ServicesSection() {
             BOTTOM CTA
         ====================================================== */}
 
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="
-            mt-12
-            flex
-            flex-col
-            items-start
-            justify-between
-            gap-6
-            rounded-[30px]
-            bg-[#e9efe3]
-            px-7
-            py-7
-            sm:px-9
-            sm:py-8
-            lg:mt-16
-            lg:flex-row
-            lg:items-center
-            lg:px-11
-          "
-                >
-                    <div>
-                        <p
-                            className="
-                font-serif
-                text-[24px]
-                font-semibold
-                tracking-[-0.02em]
-                text-[#153d29]
-                sm:text-[29px]
-              "
-                        >
-                            Ready to build your next chapter?
-                        </p>
 
-                        <p
-                            className="
-                mt-2
-                max-w-[680px]
-                text-[14px]
-                leading-6
-                text-[#617065]
-                sm:text-[15px]
-              "
-                        >
-                            Begin with a conversation. We&apos;ll help you
-                            understand the admissions process and determine
-                            whether Eben-Ezer House of Hope may be the right fit.
-                        </p>
-                    </div>
-
-                    <Link
-                        href="/apply"
-                        className="
-              group
-              inline-flex
-              min-h-[54px]
-              w-full
-              shrink-0
-              items-center
-              justify-center
-              gap-3
-              rounded-full
-              bg-[#0b512f]
-              px-7
-              py-4
-              text-[14px]
-              font-semibold
-              text-white
-              shadow-[0_12px_30px_rgba(11,81,47,0.20)]
-              transition-all
-              duration-300
-              hover:-translate-y-1
-              hover:bg-[#073d23]
-              sm:w-auto
-            "
-                    >
-                        Apply for Housing
-
-                        <ArrowRight
-                            className="
-                h-4
-                w-4
-                transition-transform
-                group-hover:translate-x-1
-              "
-                        />
-                    </Link>
-                </motion.div>
             </div>
         </section>
     );
