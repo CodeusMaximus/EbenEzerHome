@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import ReferralFormButton from "./ReferralFormButton";
 import {
     ArrowRight,
     Mail,
@@ -311,7 +312,7 @@ export default function FAQSection() {
                         {/* PHONE — replace placeholder */}
 
                         <a
-                            href="tel:+10000000000"
+                            href="tel:+15169621123"
                             className="
                 group
                 mt-6
@@ -340,13 +341,13 @@ export default function FAQSection() {
                                 <Phone className="h-4 w-4" />
                             </span>
 
-                            (000) 000-0000
+                            (516) 962-1123
                         </a>
 
                         {/* EMAIL — replace when client gives you email */}
 
                         <a
-                            href="mailto:info@ebenezerhouseofhope.com"
+                            href="mailto:support@ebenezerhouseofhope.com"
                             className="
                 group
                 mt-3
@@ -377,43 +378,14 @@ export default function FAQSection() {
                             </span>
 
                             <span className="break-all pt-2">
-                                info@ebenezerhouseofhope.com
+                                support@ebenezerhouseofhope.com
                             </span>
                         </a>
 
-                        <Link
-                            href="/apply"
-                            className="
-                group
-                mt-6
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-full
-                bg-[#0b512f]
-                px-6
-                py-3.5
-                text-[13px]
-                font-semibold
-                text-white
-                transition-all
-                duration-300
-                hover:-translate-y-0.5
-                hover:bg-[#073d23]
-              "
-                        >
-                            Apply for Housing
-
-                            <ArrowRight
-                                className="
-                  h-4
-                  w-4
-                  transition-transform
-                  group-hover:translate-x-1
-                "
-                            />
-                        </Link>
+                        <ReferralFormButton
+                            label="Apply for Housing"
+                            className="w-full sm:w-auto sm:min-w-[270px] !h-[54px] !min-h-0 text-[14px]"
+                        />
                     </motion.div>
                 </motion.div>
 
