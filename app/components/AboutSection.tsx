@@ -199,7 +199,7 @@ export default function AboutSection() {
                                         </p>
 
                                         <p className="mt-1 font-serif text-[21px] text-white">
-                                            Brooklyn, New York
+                                            Long Island, New York
                                         </p>
                                     </div>
                                 </div>
@@ -250,7 +250,7 @@ export default function AboutSection() {
                         </p>
 
                         <p className="mt-5 max-w-[680px] text-[16px] leading-8 text-[#626d64] sm:text-[17px]">
-                            With our first sober living home planned for Brooklyn,
+                            With our first sober living home planned for Long Island,
                             New York, our goal is to create a supportive,
                             substance-free community where residents can strengthen
                             their recovery, develop healthy routines, rebuild
@@ -273,7 +273,7 @@ export default function AboutSection() {
                                 <MapPin className="h-4 w-4 text-[#b28c42]" />
 
                                 <span className="text-[13px] font-semibold">
-                                    Brooklyn, New York
+                                    Long Island, New York
                                 </span>
                             </div>
 
