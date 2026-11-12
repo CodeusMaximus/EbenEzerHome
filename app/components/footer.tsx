@@ -646,10 +646,35 @@ export default function Footer() {
             sm:justify-between
           "
                 >
-                    <p>
-                        © {new Date().getFullYear()} Eben-Ezer House of Hope.
-                        All rights reserved.
-                    </p>
+
+                    <div className="flex flex-col gap-2">
+                        <p>
+                            © {new Date().getFullYear()} Eben-Ezer House of Hope.
+                            All rights reserved.
+                        </p>
+
+                        <p className="text-white/50 text-[11px] leading-relaxed">
+                            Website designed and developed by{" "}
+                            <a
+                                href="https://www.mediadari.net"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#d9b76e] font-semibold hover:text-white transition-colors"
+                            >
+                                MediaDari
+                            </a>
+                            {" "}— Professional{" "}
+                            <a
+                                href="https://www.mediadari.net/staten-island/web-design"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#d9b76e] font-semibold hover:text-white transition-colors"
+                            >
+                                Staten Island Web Design
+                            </a>
+                        </p>
+                    </div>
+
 
                     <div
                         className="
