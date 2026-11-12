@@ -1,3 +1,4 @@
+
 import {
     clerkMiddleware,
     createRouteMatcher,
@@ -17,26 +18,23 @@ const isProtectedRoute = createRouteMatcher([
 
 export default clerkMiddleware(
     async (auth, req) => {
-        // Leave all non-dashboard routes alone
+        // Public routes remain accessible
         if (!isProtectedRoute(req)) {
             return;
         }
 
-        // Get current Clerk authentication
+        // Authenticate Dashboard users
         const { userId } = await auth();
 
-        // Not signed in → require Clerk authentication
         if (!userId) {
             await auth.protect();
             return;
         }
 
-        // Get the signed-in Clerk user
         const client = await clerkClient();
-
         const user = await client.users.getUser(userId);
 
-        // Allow either authorized email address
+        // Verify administrator email
         const isAuthorized = user.emailAddresses.some(
             (email) =>
                 ADMIN_EMAILS.includes(
@@ -44,21 +42,21 @@ export default clerkMiddleware(
                 )
         );
 
-        // Signed in, but not authorized
+        // Block unauthorized users
         if (!isAuthorized) {
             return NextResponse.redirect(
                 new URL("/", req.url)
             );
         }
 
-        // Authorized → continue to Dashboard
         return;
     }
 );
 
+// Exclude SEO files from Clerk middleware
 export const config = {
     matcher: [
-        "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+        "/((?!_next|sitemap\\.xml|robots\\.txt|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
         "/(api|trpc)(.*)",
     ],
 };
